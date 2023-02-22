@@ -16,6 +16,6 @@
  )
 )
 
-(ocamllex lexer)
-(menhir (modules parser)
+(ocamllex Lexer)
+(menhir (modules Parser)
         (flags --unused-tokens --explain --fixed-exception))
