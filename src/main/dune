@@ -1,0 +1,17 @@
+
+(executables
+ (names Main)
+ (libraries
+    tip_core
+    tip_parsing
+ )
+ (preprocess (pps profiling.ppx))
+ ; for ocamldebug
+ (modes native byte)
+)
+
+(install
+ (package tip-ocaml)
+ (section bin)
+ (files (Main.exe as tip))
+)

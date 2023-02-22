@@ -1,0 +1,21 @@
+(library
+ (name tip_parsing)
+ (wrapped false)
+ (libraries
+   str
+   commons
+   lib_parsing ; Parse_info.ml
+ )
+ (preprocess
+   (pps
+     profiling.ppx
+     ppx_deriving.show
+     ppx_deriving.eq
+     ppx_hash
+   )
+ )
+)
+
+(ocamllex lexer)
+(menhir (modules parser)
+        (flags --unused-tokens --explain --fixed-exception))
