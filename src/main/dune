@@ -1,6 +1,7 @@
 (executables
  (names Main)
  (libraries
+    logs
     tip_core
     tip_parsing
  )

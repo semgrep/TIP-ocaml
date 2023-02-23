@@ -47,9 +47,7 @@ rule token = parse
   | "&" { TAmpersand(tokinfo lexbuf) }
   | "/" { TDiv(tokinfo lexbuf) }
   | "<" { TLt(tokinfo lexbuf) }  | ">" { TGt(tokinfo lexbuf) }
-
-
- | "==" { TEqEq (tokinfo lexbuf) }
+  | "==" { TEqEq (tokinfo lexbuf) }
 
   (* ----------------------------------------------------------------------- *)
   (* Keywords and ident *)
@@ -75,3 +73,11 @@ rule token = parse
   (* ----------------------------------------------------------------------- *)
 
   | ('-'? digit+) as s { TInt (int_of_string s, tokinfo lexbuf) }
+
+  (* ----------------------------------------------------------------------- *)
+  (* eof *)
+  (* ----------------------------------------------------------------------- *)
+
+  | eof { EOF (tokinfo lexbuf) }
+
+  | _ { failwith ("unrecognised symbol, in token rule:" ^ tok lexbuf) }

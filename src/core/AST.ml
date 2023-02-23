@@ -9,9 +9,13 @@
 (*****************************************************************************)
 
 type tok = Parse_info.t
+[@@deriving show]
+
 type 'a wrap = 'a * tok
+[@@deriving show]
 
 type ident = string wrap
+[@@deriving show]
 
 type exp =
   (* basic *)
@@ -40,6 +44,7 @@ and operator =
   | Plus | Minus | Mult | Div
   | Lt | Gt
   | EqEq
+[@@deriving show]
 
 type stm =
   | Assign of ident * tok (* = *) * exp
@@ -51,6 +56,7 @@ type stm =
   | EmptyStmt
   | If of tok * exp * stm * stm option
   | While of tok * exp * stm
+[@@deriving show]
 
 type fun_ = {
   fname: ident;
@@ -59,8 +65,10 @@ type fun_ = {
   fbody: stm;
   freturn:  tok (* 'return' *) * exp;
 }
+[@@deriving show]
 
 type program = fun_ list
+[@@deriving show]
 
 (*****************************************************************************)
 (* Helpers *)

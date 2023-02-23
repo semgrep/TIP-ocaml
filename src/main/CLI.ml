@@ -13,8 +13,9 @@ open Cmdliner
 type conf = {
   targets: Fpath.t list;
   action: action_kind option;
+  logging_level: Logs.level option;
 }
-and action_kind = 
+and action_kind =
   | DumpAST
   | DumpCFG
 [@@deriving show]
@@ -22,6 +23,7 @@ and action_kind =
 let _default: conf = {
     targets = [];
     action = None;
+    logging_level = None;
 }
 
 type exit_code = int
@@ -29,6 +31,26 @@ type exit_code = int
 (*************************************************************************)
 (* Command-line flags *)
 (*************************************************************************)
+
+(* ------------------------------------------------------------------ *)
+(* "Verbosity options" (mutually exclusive) *)
+(* ------------------------------------------------------------------ *)
+let o_verbose : bool Term.t =
+  let info =
+    Arg.info [ "v"; "verbose" ]
+      ~doc:
+        {|Show more details about what analysis are running, which files
+failed to parse, etc.
+|}
+  in
+  Arg.value (Arg.flag info)
+
+let o_debug : bool Term.t =
+  let info =
+    Arg.info [ "debug" ]
+      ~doc:{|All of --verbose, but with additional debugging information.|}
+  in
+  Arg.value (Arg.flag info)
 
 (* ------------------------------------------------------------------ *)
 (* Positional arguments *)
@@ -63,19 +85,34 @@ let o_dump_cfg : bool Term.t =
 let cmdline_term : conf Term.t =
   (* !The parameters must be in alphabetic orders to match the order
    * of the corresponding '$ o_xx $' further below! *)
-  let combine _dump_ast _dump_cfg targets =
+  let combine debug dump_ast dump_cfg targets verbose =
     let targets = targets |> Common.map Fpath.v in
-    (* TODO *)
-    let action = None in
+    let action = 
+      match dump_ast, dump_cfg with
+      | false, false -> None
+      | true, false -> Some DumpAST
+      | false, true -> Some DumpCFG
+      | _else_ -> 
+          failwith "mutually exclusive options --dump-ast/--dump-cfg/..."
+    in
+    let logging_level =
+      match (verbose, debug) with
+      | false, false -> Some Logs.Warning
+      | true, false -> Some Logs.Info
+      | false, true -> Some Logs.Debug
+      | _else_ ->
+           failwith "mutually exclusive options --verbose/--debug"
+    in
     { targets; 
       action;
+      logging_level;
     }
   in
   (* Term defines 'const' but also the '$' operator *)
   Term.(
     (* !the o_xxx must be in alphabetic orders to match the parameters of
      * combine above! *)
-    const combine $ o_dump_ast $ o_dump_cfg $ o_targets
+    const combine $ o_debug $ o_dump_ast $ o_dump_cfg $ o_targets $ o_verbose
   )
 
 let doc = "run analysis on TIP files"
@@ -96,7 +133,9 @@ let cmdline_info : Cmd.info = Cmd.info "otip" ~doc ~man
 (* Helpers *)
 (*****************************************************************************)
 
-(* Small wrapper around Cmdliner.Cmd.eval_value. *)
+(* Small wrapper around Cmdliner.Cmd.eval_value. 
+ * mostly a copy-paste of osemgrep/CLI_Common.eval_value
+*)
 let eval_value ~argv cmd =
   (* the ~catch:false is to let non-cmdliner exn to bubble up *)
   match Cmd.eval_value ~catch:false ~argv cmd with
@@ -121,8 +160,14 @@ let parse_argv (argv : string array) : conf =
   let cmd : conf Cmd.t = Cmd.v cmdline_info cmdline_term in
   eval_value ~argv cmd
 
-let run (_conf : conf) : exit_code =
-  (* TODO *)
+let run (conf : conf) : exit_code =
+  Logs_helpers.setup_logging ~force_color:true ~level:conf.logging_level;
+  Logs.info (fun m -> m "conf = %s" (show_conf conf));
+  (match conf.action, conf.targets with
+  | Some DumpAST, [path] -> Actions.dump_ast path
+  | Some DumpCFG, [path] -> Actions.dump_cfg path
+  | _else_ -> failwith "unsupported action"
+  );
   0
 
 let main (argv: string array) : exit_code =

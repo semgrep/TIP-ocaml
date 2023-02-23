@@ -2,9 +2,8 @@
  (name tip_parsing)
  (wrapped false)
  (libraries
-   fpath
-   commons
-   lib_parsing ; Parse_info.ml
+   fpath logs
+   commons lib_parsing ; in semgrep now
    tip_core
  )
  (preprocess

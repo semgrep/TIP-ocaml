@@ -2,6 +2,7 @@
 type conf = {
   targets: Fpath.t list;
   action: action_kind option;
+  logging_level: Logs.level option;
 }
 and action_kind = 
   | DumpAST
