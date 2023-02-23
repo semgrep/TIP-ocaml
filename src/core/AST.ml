@@ -37,6 +37,7 @@ type exp =
 
 and arg = exp
 
+(* constraint: the exp can't be a record itself (but can be a pointer to one)*)
 and field = ident * tok (* ':' *) * exp
 
 and operator =
