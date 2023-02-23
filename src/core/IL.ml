@@ -52,9 +52,8 @@ type stmt =
   (* Id.Id = E; *)
   | AssignField of ident * tok * ident * expr
   | Output of tok (* 'output' *) * expr
-  | Seq of stmt list
-  | If of tok * basic_expr * stmt * stmt
-  | While of tok * basic_expr * stmt
+  | If of tok * basic_expr * stmt list * stmt list
+  | While of tok * basic_expr * stmt list
 [@@deriving show { with_path = false }]
 
 
@@ -62,7 +61,7 @@ type fun_ = {
   fname: ident;
   fparams: ident list;
   fvars: ident list;
-  fbody: stmt;
+  fbody: stmt list;
   freturn:  tok (* 'return' *) * expr;
 }
 [@@deriving show { with_path = false }]
