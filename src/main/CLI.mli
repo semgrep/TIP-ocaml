@@ -6,6 +6,7 @@ type conf = {
 }
 and action_kind = 
   | DumpAST
+  | DumpIL
   | DumpCFG
 [@@deriving show]
 

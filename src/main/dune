@@ -4,6 +4,7 @@
     logs
     tip_core
     tip_parsing
+    tip_analyzing
  )
  (preprocess (pps profiling.ppx ppx_deriving.show))
  ; for ocamldebug

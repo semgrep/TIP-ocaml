@@ -1,0 +1,4 @@
+main () {
+  x = f(y+3)*5;
+  return x;
+}
