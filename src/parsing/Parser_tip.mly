@@ -66,6 +66,8 @@ open AST
  *
  * The precedences must be listed from low to high.
  *)
+%left Talloc
+%right TDot
 %left TEqEq TLt TGt
 %left TPlus TMinus
 %left TStar TDiv
@@ -89,14 +91,14 @@ list_sep(X,Sep):
 program: fun_+ EOF { $1 }
 
 fun_: 
-  TId "(" list_sep(TId, ",") ")"
+  TId "(" list_sep(TId, ",")? ")"
   "{"
    vars?
    stm
    Treturn exp ";"
   "}"
   { { fname = $1;
-      fparams = $3;
+      fparams = $3 |> Common.optlist_to_list;
       fvars = $6 |> Common.optlist_to_list;
       fbody = $7;
       freturn = ($8, $9);
@@ -109,7 +111,11 @@ vars: Tvar list_sep(TId, ",") ";" { $2 }
 (* Statements *)
 (*************************************************************************)
 stm1:
- | TId "=" exp ";" { Assign ($1, $2, $3) }
+ | TId         "=" exp ";" { Assign ($1, $2, $3) }
+ | "*" exp     "=" exp ";" { AssignDeref ($1, $2, $3, $4) }
+ | TId "." TId "=" exp ";" { AssignField ($1, $2, $3, $4, $5) }
+ | "(" "*" exp ")" "." TId "=" exp ";"
+     { GenAssignField ($2, $3, $5, $6, $7, $8) }
  | Toutput exp ";" { Output ($1, $2) }
  | Tif "(" exp ")" "{" stm "}" else_opt { If ($1, $3, $6, $8) }
  | Twhile "(" exp ")" "{" stm "}" { While ($1, $3, $6) }
@@ -128,6 +134,7 @@ exp:
  | TInt     { Int $1 }
  (* not in original grammar, but otherwise error on 'n-1' *)
  | "-" TInt { let (i, tk) = $2 in Int (- i, tk) }
+ (* not in original TIP *)
  | TBool { Bool $1 }
  | TId { Id $1 }
  | exp "+" exp { BinaryOp ($1, (Plus, $2), $3) }
@@ -139,9 +146,19 @@ exp:
  | exp "==" exp { BinaryOp ($1, (EqEq, $2), $3) }
  | "(" exp ")" { $2 }
  | Tinput { Input $1 }
- | TId "(" list_sep(exp, ",") ")" { Call (Id $1, $3) }
+ | TId "(" list_sep(exp, ",")? ")" { Call (Id $1, Common.optlist_to_list $3) }
  (* not in original grammar like this, but otherwise s/r conflicts *)
  | "(" exp ")" "(" list_sep(exp, ",") ")" { Call ($2, $5) }
+ (* pointers *)
+ | Talloc exp { Alloc ($1, $2) } 
+ | "&" TId { Ref ($1, $2) }
+ | "*" exp { Deref ($1, $2) }
+ | Tnull { Null $1 }
+ (* records *)
+ | "{" field+ "}" { Record $2 }
+ | exp "." TId { DotAccess ($1, $2, $3) }
+
+field: TId ":" exp { $1, $2, $3 }
 
 (*************************************************************************)
 (* Types *)

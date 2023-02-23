@@ -46,6 +46,7 @@ and operator =
 [@@deriving show { with_path = false }]
 
 type stm =
+  (* alt: could define an lvalue type and factorize those Assign *)
   | Assign of ident * tok (* = *) * exp
   | AssignDeref of tok (* '*' *) * exp * tok (* = *) * exp
   | AssignField of ident * tok (* '.' *) *ident * tok (* = *) * exp
