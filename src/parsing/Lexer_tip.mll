@@ -79,7 +79,8 @@ rule token = parse
   (* Constant *)
   (* ----------------------------------------------------------------------- *)
 
-  | ('-'? digit+) as s { TInt (int_of_string s, tokinfo lexbuf) }
+  (* in original grammar accept also '-', but then grammar error for 'n-1' *)
+  | digit+ as s { TInt (int_of_string s, tokinfo lexbuf) }
 
   (* ----------------------------------------------------------------------- *)
   (* eof *)

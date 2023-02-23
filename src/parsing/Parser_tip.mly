@@ -114,21 +114,20 @@ stm1:
  | Tif "(" exp ")" "{" stm "}" else_opt { If ($1, $3, $6, $8) }
  | Twhile "(" exp ")" "{" stm "}" { While ($1, $3, $6) }
 
-stm: stm1* {
-  match $1 with
-  | [x] -> x
-  | xs -> Seq xs
-  }
+(* no in original grammar, but otherwise s/r conflicts *)
+stm: stm1* { match $1 with | [x] -> x | xs -> Seq xs }
 
 else_opt:
- | (* empty *) { None }
+ | (* empty *)       { None }
  | Telse "{" stm "}" { Some $3 }
  
 (*************************************************************************)
 (* Expressions *)
 (*************************************************************************)
 exp:
- | TInt { Int $1 }
+ | TInt     { Int $1 }
+ (* not in original grammar, but otherwise error on 'n-1' *)
+ | "-" TInt { let (i, tk) = $2 in Int (- i, tk) }
  | TBool { Bool $1 }
  | TId { Id $1 }
  | exp "+" exp { BinaryOp ($1, (Plus, $2), $3) }
@@ -140,7 +139,9 @@ exp:
  | exp "==" exp { BinaryOp ($1, (EqEq, $2), $3) }
  | "(" exp ")" { $2 }
  | Tinput { Input $1 }
- | TId "(" list_sep(exp, ",") ")" { Call ($1, $3) }
+ | TId "(" list_sep(exp, ",") ")" { Call (Id $1, $3) }
+ (* not in original grammar like this, but otherwise s/r conflicts *)
+ | "(" exp ")" "(" list_sep(exp, ",") ")" { Call ($2, $5) }
 
 (*************************************************************************)
 (* Types *)

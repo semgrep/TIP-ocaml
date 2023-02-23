@@ -24,13 +24,12 @@ type exp =
   | Id of ident
   | BinaryOp of exp * operator wrap * exp
   | Input of tok (* 'input' *)
-  | Call of ident * arg list
+  | Call of exp (* usually an Id *) * arg list
   (* pointers *)
   | Alloc of tok * exp
   | Ref of tok (* '&' *) * ident
   | Deref of tok (* '*' *) * exp
   | Null of tok
-  | GenCall of exp * arg list (* Gen for generalized *)
   (* record *)
   | Record of field list
   | DotAccess of exp * tok (* '.' *) * ident
