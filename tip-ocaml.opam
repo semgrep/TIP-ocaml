@@ -1,0 +1,29 @@
+opam-version: "2.0"
+name: "TIP-ocaml"
+version: "0.0.1"
+synopsis: "TIP implementation in OCaml"
+description: """
+"""
+
+maintainer: "Yoann Padioleau <pad@r2c.dev>"
+authors: [ "Yoann Padioleau <pad@r2c.dev>" ]
+license: "LGPL-2.1"
+homepage: "https://github.com/returntocorp/TIP-ocaml"
+dev-repo: "git+https://github.com/returntocorp/TIP-ocaml"
+bug-reports: "https://github.com/returntocorp/TIP-ocaml/issues"
+
+depends: [
+  "ocaml" {>= "4.12.0"}
+  "dune" {>= "2.7.0" }
+  "menhir" {= "20211128"} (* Newer versions cause massive build slowdowns *)
+  "fpath"
+  "cmdliner"
+  "ppxlib"
+  "ppx_deriving"
+  (* in semgrep *)
+  "commons"
+  "lib_parsing"
+  "profiling"
+]
+
+build: [make]

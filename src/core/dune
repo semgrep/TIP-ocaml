@@ -4,14 +4,13 @@
  (libraries
    str
    commons
-   lib_parsing ; Parse_info.ml
+   lib_parsing ; Parse_info.ml, in semgrep
  )
  (preprocess
    (pps
-     profiling.ppx
+     profiling.ppx ; also in semgrep
      ppx_deriving.show
      ppx_deriving.eq
-     ppx_hash
    )
  )
 )
