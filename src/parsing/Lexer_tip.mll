@@ -1,11 +1,17 @@
 {
+open Common
 open Parser_tip
+
+(*****************************************************************************)
+(* Prelude *)
+(*****************************************************************************)
+(* TIP lexer
+ *)
 
 (*****************************************************************************)
 (* Helpers *)
 (*****************************************************************************)
 (* shortcuts *)
-let tok = Lexing.lexeme
 let tokinfo = Parse_info.tokinfo
 
 }
@@ -27,7 +33,7 @@ let space = [' ' '\t']
 rule token = parse
 
   (* ----------------------------------------------------------------------- *)
-  (* spacing/comments *)
+  (* spacing *)
   (* ----------------------------------------------------------------------- *)
   | newline { token lexbuf }
   | space+ { token lexbuf }
@@ -66,7 +72,7 @@ rule token = parse
   | "true" { TBool (true, tokinfo lexbuf) }
   | "false" { TBool (false, tokinfo lexbuf) }
 
-  | ident as s { TIdent (s, tokinfo lexbuf) }
+  | ident as s { TId (s, tokinfo lexbuf) }
 
   (* ----------------------------------------------------------------------- *)
   (* Constant *)
@@ -80,4 +86,4 @@ rule token = parse
 
   | eof { EOF (tokinfo lexbuf) }
 
-  | _ { failwith ("unrecognised symbol, in token rule:" ^ tok lexbuf) }
+  | _ as c { failwith (spf "unrecognised symbol, in token rule: %c" c) }

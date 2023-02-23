@@ -1,6 +1,13 @@
 open Parser_tip
 module PI = Parse_info
 
+(*****************************************************************************)
+(* Prelude *)
+(*****************************************************************************)
+(* The functions here are useful for some of the helpers code we use
+ * in the Parsing_helpers library
+ *)
+
 let is_eof = function
   | EOF _ -> true
   | _else_ -> false
@@ -13,7 +20,7 @@ let is_comment = function
 (* Visitors *)
 (*****************************************************************************)
 let visitor_info_of_tok f = function
-  | TIdent (x, ii) -> TIdent (x, f ii)
+  | TId (x, ii) -> TId (x, f ii)
   | TBool (x, ii) -> TBool (x, f ii)
   | TDot ii -> TDot (f ii)
   | TEq ii -> TEq (f ii)

@@ -44,7 +44,7 @@ and operator =
   | Plus | Minus | Mult | Div
   | Lt | Gt
   | EqEq
-[@@deriving show]
+[@@deriving show { with_path = false }]
 
 type stm =
   | Assign of ident * tok (* = *) * exp
@@ -52,20 +52,20 @@ type stm =
   | AssignField of ident * tok (* '.' *) *ident * tok (* = *) * exp
   | GenAssignField of tok (* '*' *) * exp * tok (* '.' *) * ident * tok (* = *) * exp
   | Output of tok (* 'output' *) * exp
-  | Seq of stm * stm
-  | EmptyStmt
+  (* can be empty *)
+  | Seq of stm list
   | If of tok * exp * stm * stm option
   | While of tok * exp * stm
-[@@deriving show]
+[@@deriving show { with_path = false }]
 
 type fun_ = {
   fname: ident;
   fparams: ident list;
-  fvars: (tok (* 'var' *) * ident list) option;
+  fvars: ident list;
   fbody: stm;
   freturn:  tok (* 'return' *) * exp;
 }
-[@@deriving show]
+[@@deriving show { with_path = false }]
 
 type program = fun_ list
 [@@deriving show]
