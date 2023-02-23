@@ -2,9 +2,10 @@
  (name tip_parsing)
  (wrapped false)
  (libraries
-   str
+   fpath
    commons
    lib_parsing ; Parse_info.ml
+   tip_core
  )
  (preprocess
    (pps
@@ -16,6 +17,6 @@
  )
 )
 
-(ocamllex Lexer)
-(menhir (modules Parser)
+(ocamllex Lexer_tip)
+(menhir (modules Parser_tip)
         (flags --unused-tokens --explain --fixed-exception))
