@@ -54,6 +54,7 @@ rule token = parse
   | "/" { TDiv(tokinfo lexbuf) }
   | "<" { TLt(tokinfo lexbuf) }  | ">" { TGt(tokinfo lexbuf) }
   | "==" { TEqEq (tokinfo lexbuf) }
+  | "=" { TEq (tokinfo lexbuf) }
 
   (* ----------------------------------------------------------------------- *)
   (* Keywords and ident *)
