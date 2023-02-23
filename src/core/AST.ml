@@ -1,8 +1,7 @@
 (*****************************************************************************)
 (* Prelude *)
 (*****************************************************************************)
-(* TIP (Tiny Imperative Programming language) AST (Abstract Syntax Tree).
- *)
+(* TIP (Tiny Imperative Programming language) AST (Abstract Syntax Tree) *)
 
 (*****************************************************************************)
 (* Types *)
