@@ -1,7 +1,5 @@
 open Common
 
-[@@@warning "-27-39-32-26"]
-
 (*****************************************************************************)
 (* Prelude *)
 (*****************************************************************************)
@@ -9,13 +7,6 @@ open Common
 (*****************************************************************************)
 (* types *)
 (*****************************************************************************)
-type env = {
-  stmts: IL.stmt list ref;
-}
-
-let default_env () = 
-  { stmts = ref [] }
-
 
 (*****************************************************************************)
 (* Helpers *)
@@ -29,24 +20,45 @@ let fresh_id tok : IL.ident =
 (*****************************************************************************)
 (* Expr *)
 (*****************************************************************************)
-let expr_of_exp (exp: AST.exp) : IL.stmt list * IL.expr =
-  let rec aux = function
-  | AST.Int x -> failwith "XXX"
-  | AST.Bool x -> failwith "XXX"
-  | AST.Id id -> failwith "XXX"
-  | AST.BinaryOp (exp1, op, exp2) -> failwith "XXX"
-  | AST.Input tk -> failwith "XXX"
-  | AST.Call (exp, args) -> failwith "XXX"
-  | AST.Alloc (talloc, exp) -> failwith "XXX"
-  | AST.Ref (tand, id) -> failwith "XXX"
-  | AST.Deref (tstar, exp) -> failwith "XXX"
-  | AST.Null tnull -> failwith "XXX"
-  | AST.Record flds -> failwith "XXX"
-  | AST.DotAccess (exp, tdot, id) -> failwith "XXX"
-  in
-  aux exp
+let rec expr_of_exp (exp: AST.exp) : IL.stmt list * IL.expr =
+  match exp with
+  | AST.Int x -> [], IL.B (IL.Int x)
+  | AST.Bool x -> [], IL.B (IL.Bool x)
+  | AST.Id id -> [], IL.B (IL.Id id)
+  | AST.BinaryOp (exp1, op, exp2) ->
+      let st1, e1 = basic_expr_of_exp exp1 in
+      let st2, e2 = basic_expr_of_exp exp2 in
+      st1 @ st2, IL.BinaryOp (e1, op, e2)
+  | AST.Input tk -> [], IL.Input tk
+  | AST.Call (exp, args) -> 
+        let st1, id = ident_of_exp exp in
+        let st_and_args = Common.map basic_expr_of_exp args in
+        let st2 = st_and_args |> List.concat_map fst in
+        let es = st_and_args |> Common.map snd in
+        st1 @ st2, IL.Call (id, es)
+  | AST.Alloc (talloc, exp) -> 
+        let st, e = basic_expr_of_exp exp in
+        st, IL.Alloc (talloc, e)
+  | AST.Ref (tand, id) ->
+        [], IL.Ref (tand, id)
+  | AST.Deref (tstar, exp) -> 
+        let st, id = ident_of_exp exp in
+        st, IL.Deref (tstar, id)
+  | AST.Null tnull ->
+        [], IL.B (IL.Null tnull)
+  | AST.Record flds -> 
+        let st_and_flds = flds |> Common.map (fun (id, tcolon, exp) ->
+             let st, e = basic_expr_of_exp exp in
+             st, (id, tcolon, e)
+         ) in
+        let st = st_and_flds |> List.concat_map fst in
+        let flds = st_and_flds |> Common.map snd in
+        st, IL.Record flds
+  | AST.DotAccess (exp, tdot, idfld) ->
+        let st, id = ident_of_exp exp in
+        st, IL.DotAccess (id, tdot, idfld)
 
-let ident_of_exp (exp: AST.exp) : IL.stmt list * IL.ident =
+and ident_of_exp (exp: AST.exp) : IL.stmt list * IL.ident =
   match exp with
   | AST.Id x -> [], x
   | _else_ ->
@@ -55,7 +67,7 @@ let ident_of_exp (exp: AST.exp) : IL.stmt list * IL.ident =
       let id = fresh_id tk in
       st @ [ IL.Assign (id, tk, e) ], id
 
-let basic_expr_of_exp (exp: AST.exp) : IL.stmt list * IL.basic_expr =
+and basic_expr_of_exp (exp: AST.exp) : IL.stmt list * IL.basic_expr =
   match exp with
   | AST.Int x -> [], IL.Int x
   | AST.Bool x -> [], IL.Bool x
@@ -67,9 +79,6 @@ let basic_expr_of_exp (exp: AST.exp) : IL.stmt list * IL.basic_expr =
       let st, id = ident_of_exp exp in
       st, IL.Id id
 
-
-
-
 (*****************************************************************************)
 (* Stmt *)
 (*****************************************************************************)
@@ -79,11 +88,16 @@ let stmts_of_stm (stm: AST.stm) : IL.stmt list =
         let st1, e = expr_of_exp exp in
         st1 @ [ IL.Assign (id, teq, e) ]
     | AST.AssignDeref (tstar, exp1, teq, exp2) ->
-        failwith "XXX"
+        let st1, id1 = ident_of_exp exp1 in
+        let st2, id2 = ident_of_exp exp2 in
+        st1 @ st2 @ [ IL.AssignDeref (tstar, id1, teq, id2) ]
     | AST.AssignField (id, tdot, idfld, teq, exp) ->
-        failwith "XXX"
+        let st, e = expr_of_exp exp in
+        st @ [ IL.AssignField (id, tdot, idfld, teq, e) ]
     | GenAssignField (tstar, exp1, tdot, idfld, teq, exp2) ->
-        failwith "XXX"
+        let st1, id1 = ident_of_exp (AST.Deref (tstar, exp1)) in
+        let st2, e2 = expr_of_exp exp2 in
+        st1 @ st2 @ [ IL.AssignField (id1, tdot, idfld, teq, e2) ]
     | Output (tk, exp) ->
         let st, e = expr_of_exp exp in
         st @ [IL.Output (tk, e)]

@@ -50,7 +50,7 @@ type stmt =
   (* *Id = Id; *)
   | AssignDeref of tok * ident * tok * ident (* could be expr too *)
   (* Id.Id = E; *)
-  | AssignField of ident * tok * ident * expr
+  | AssignField of ident * tok * ident * tok * expr
   | Output of tok (* 'output' *) * expr
   | If of tok * basic_expr * stmt list * stmt list
   | While of tok * basic_expr * stmt list
