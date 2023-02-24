@@ -20,6 +20,7 @@ type 'a wrap = 'a AST.wrap
 type ident = AST.ident
 [@@deriving show]
 
+(* similar to a subset of AST.exp *)
 type basic_expr = 
   | Int of int wrap
   | Bool of bool wrap
@@ -27,7 +28,7 @@ type basic_expr =
   | Id of ident
 [@@deriving show { with_path = false }]
 
-(* not a recursive anymore! *)
+(* not a recursive type anymore! *)
 type expr =
   | B of basic_expr
   | Input of tok
@@ -35,22 +36,27 @@ type expr =
   | BinaryOp of basic_expr * AST.operator wrap * basic_expr
   | Call of ident * basic_expr list
   | Alloc of tok * basic_expr
-  | Ref of tok * ident
-  | Deref of tok * ident
+  | Ref of tok (* '&' *) * ident
+  (* alt: R of lvalue to factorize Deref, DotAccess, and B Id *)
+  | Deref of tok (* '*' *) * ident
+  | DotAccess of ident * tok (* '.' *) * ident
   | Record of field list
-  | DotAccess of ident * tok * ident
 
 and field = ident * tok * basic_expr
 [@@deriving show { with_path = false }]
 
-(* alt: define an lvalue type *)
+(* alt: define AssignDeref and AssignField *)
+type lvalue =
+  (* Id = ...; *)
+  | LId of ident
+  (* *Id = ...; *)
+  | LDeref of tok (* '*' *) * ident
+  (* Id.Id = ...; *)
+  | LField of ident * tok (* '.' *) * ident
+[@@deriving show { with_path = false }]
+
 type stmt =
-  (* Id = E; which includes Id = *Id; *)
-  | Assign of ident * tok * expr
-  (* *Id = Id; *)
-  | AssignDeref of tok * ident * tok * ident (* could be expr too *)
-  (* Id.Id = E; *)
-  | AssignField of ident * tok * ident * tok * expr
+  | Assign of lvalue * tok * expr
   | Output of tok (* 'output' *) * expr
   | If of tok * basic_expr * stmt list * stmt list
   | While of tok * basic_expr * stmt list

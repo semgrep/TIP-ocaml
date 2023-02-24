@@ -65,7 +65,7 @@ and ident_of_exp (exp: AST.exp) : IL.stmt list * IL.ident =
       let st, e = expr_of_exp exp in
       let tk = AST.tok_of_expr exp in
       let id = fresh_id tk in
-      st @ [ IL.Assign (id, tk, e) ], id
+      st @ [ IL.Assign (IL.LId id, tk, e) ], id
 
 and basic_expr_of_exp (exp: AST.exp) : IL.stmt list * IL.basic_expr =
   match exp with
@@ -86,18 +86,18 @@ let stmts_of_stm (stm: AST.stm) : IL.stmt list =
   let rec aux = function
     | AST.Assign (id, teq, exp) ->
         let st1, e = expr_of_exp exp in
-        st1 @ [ IL.Assign (id, teq, e) ]
+        st1 @ [ IL.Assign (IL.LId id, teq, e) ]
     | AST.AssignDeref (tstar, exp1, teq, exp2) ->
         let st1, id1 = ident_of_exp exp1 in
-        let st2, id2 = ident_of_exp exp2 in
-        st1 @ st2 @ [ IL.AssignDeref (tstar, id1, teq, id2) ]
+        let st2, e2 = expr_of_exp exp2 in
+        st1 @ st2 @ [ IL.Assign (IL.LDeref (tstar, id1), teq, e2) ]
     | AST.AssignField (id, tdot, idfld, teq, exp) ->
         let st, e = expr_of_exp exp in
-        st @ [ IL.AssignField (id, tdot, idfld, teq, e) ]
+        st @ [ IL.Assign (IL.LField (id, tdot, idfld), teq, e) ]
     | GenAssignField (tstar, exp1, tdot, idfld, teq, exp2) ->
         let st1, id1 = ident_of_exp (AST.Deref (tstar, exp1)) in
         let st2, e2 = expr_of_exp exp2 in
-        st1 @ st2 @ [ IL.AssignField (id1, tdot, idfld, teq, e2) ]
+        st1 @ st2 @ [ IL.Assign (IL.LField (id1, tdot, idfld), teq, e2) ]
     | Output (tk, exp) ->
         let st, e = expr_of_exp exp in
         st @ [IL.Output (tk, e)]
