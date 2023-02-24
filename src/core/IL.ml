@@ -58,6 +58,7 @@ type lvalue =
 type stmt =
   | Assign of lvalue * tok * expr
   | Output of tok (* 'output' *) * expr
+  (* could also put expr for the cond *)
   | If of tok * basic_expr * stmt list * stmt list
   | While of tok * basic_expr * stmt list
 [@@deriving show { with_path = false }]

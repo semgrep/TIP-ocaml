@@ -4,6 +4,7 @@
  (libraries
    str
    commons
+   ograph
    lib_parsing ; Parse_info.ml, in semgrep
  )
  (preprocess
