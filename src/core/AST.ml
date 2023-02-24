@@ -51,10 +51,10 @@ type stm =
   (* alt: could define an lvalue type and factorize those Assign *)
   | Assign of ident * tok (* = *) * exp
   | AssignDeref of tok (* '*' *) * exp * tok (* = *) * exp
-  | AssignField of ident * tok (* '.' *) *ident * tok (* = *) * exp
+  | AssignField of ident * tok (* '.' *) * ident * tok (* = *) * exp
   | GenAssignField of tok (* '*' *) * exp * tok (* '.' *) * ident * tok (* = *) * exp
   | Output of tok (* 'output' *) * exp
-  (* can be empty *)
+  (* can be the empty list *)
   | Seq of stm list
   | If of tok * exp * stm * stm option
   | While of tok * exp * stm
@@ -93,5 +93,3 @@ let rec tok_of_expr = function
       tok_of_expr e
   | Record [] ->
       raise Impossible
-      
-      
