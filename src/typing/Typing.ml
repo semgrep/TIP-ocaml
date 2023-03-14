@@ -4,12 +4,8 @@ module Set = Set_
 exception Todo of string
 exception TypeError
 
-(* Define a type variable *)
-
 type type_variable = int
 [@@deriving show]
-
-(* Define terms and type constraints *)
 
 type term = 
   | TypeVar of type_variable
@@ -74,7 +70,7 @@ module UnionFind = struct
   let union (reprs : reprs) x y =
     let x_repr, reprs = find_and_update reprs x in
     let y_repr, reprs = find_and_update reprs y in
-    if x_repr != y_repr then
+    if x_repr <> y_repr then
     TermMap.update x_repr (fun _ -> Some y_repr) reprs
     else reprs
 end
