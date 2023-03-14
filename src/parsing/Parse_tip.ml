@@ -17,7 +17,7 @@ let error_msg_tok tok = Parsing_helpers.error_message_info (TH.info_of_tok tok)
 (*****************************************************************************)
 let tokens path =
   Parsing_helpers.tokenize_all_and_adjust_pos 
-    (Fpath.to_string path)
+    (Parsing_helpers.File path)
     Lexer_tip.token 
     TH.visitor_info_of_tok
     TH.is_eof

@@ -1,0 +1,11 @@
+twice(f, x) {
+  return f(f(x));
+}
+
+inc(y) {
+  return y+1;
+}
+
+main(z) {
+  return twice(inc, z);
+}

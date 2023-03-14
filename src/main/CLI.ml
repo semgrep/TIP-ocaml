@@ -19,6 +19,7 @@ and action_kind =
   | DumpAST
   | DumpIL
   | DumpCFG
+  | DumpTypes
 [@@deriving show]
 
 let _default: conf = {
@@ -85,6 +86,12 @@ let o_dump_cfg : bool Term.t =
   in
   Arg.value (Arg.flag info)
 
+let o_dump_types : bool Term.t =
+  let info =
+    Arg.info [ "dump-types" ] ~doc:{|Dump the type assignments of the target.|}
+  in
+  Arg.value (Arg.flag info)
+
 (*****************************************************************************)
 (* Turn argv into a conf *)
 (*****************************************************************************)
@@ -92,14 +99,15 @@ let o_dump_cfg : bool Term.t =
 let cmdline_term : conf Term.t =
   (* !The parameters must be in alphabetic orders to match the order
    * of the corresponding '$ o_xx $' further below! *)
-  let combine debug dump_ast dump_cfg dump_il targets verbose =
+  let combine debug dump_ast dump_cfg dump_il dump_types targets verbose =
     let targets = targets |> Common.map Fpath.v in
     let action = 
-      match dump_ast, dump_il, dump_cfg with
-      | false, false, false -> None
-      | true, false, false -> Some DumpAST
-      | false, true, false -> Some DumpIL
-      | false, false, true -> Some DumpCFG
+      match dump_ast, dump_il, dump_cfg, dump_types with
+      | false, false, false, false -> None
+      | true, false, false, false -> Some DumpAST
+      | false, true, false, false -> Some DumpIL
+      | false, false, true, false -> Some DumpCFG
+      | false, false, false, true -> Some DumpTypes
       | _else_ -> 
           failwith "mutually exclusive options --dump-ast/--dump-cfg/..."
     in
@@ -121,7 +129,7 @@ let cmdline_term : conf Term.t =
     (* !the o_xxx must be in alphabetic orders to match the parameters of
      * combine above! *)
     const combine $ o_debug $ o_dump_ast $ o_dump_cfg $ o_dump_il 
-     $ o_targets $ o_verbose
+     $o_dump_types $ o_targets $ o_verbose
   )
 
 let doc = "run analysis on TIP files"
@@ -176,7 +184,8 @@ let run (conf : conf) : exit_code =
   | Some DumpAST, [path] -> Actions.dump_ast path
   | Some DumpIL, [path] -> Actions.dump_il path
   | Some DumpCFG, [path] -> Actions.dump_cfg path
-  | _else_ -> failwith "unsupported action"
+  | Some DumpTypes, [path] -> Actions.dump_types path
+  | _else_ -> failwith "Unsupported action. Run with `--help` to see supported actions"
   );
   0
 

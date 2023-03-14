@@ -1,0 +1,14 @@
+(library
+ (name tip_typing)
+ (wrapped false)
+ (libraries
+   tip_core
+ )
+ (preprocess
+   (pps
+     profiling.ppx
+     ppx_deriving.show
+     ppx_deriving.eq
+   )
+ )
+)

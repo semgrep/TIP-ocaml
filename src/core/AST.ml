@@ -9,6 +9,12 @@ open Common
 (* Types *)
 (*****************************************************************************)
 
+type type_ = 
+  | Int
+  | Ptr of type_
+  | Fun of type_ list * type_
+[@@deriving show]
+
 type tok = Parse_info.t
 [@@deriving show]
 
