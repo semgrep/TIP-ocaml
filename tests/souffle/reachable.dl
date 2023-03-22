@@ -1,0 +1,11 @@
+// from https://courses.cs.washington.edu/courses/cse344/18sp/SouffleLanguage.pdf
+.decl edge (n: symbol, m: symbol)
+edge("a", "b"). /* facts of edge */
+edge("b", "c").
+edge("c", "b").
+edge("c", "d").
+
+.decl reachable (n: symbol, m: symbol)
+.output reachable
+reachable(x, y):- edge(x, y). //  base    rule    
+reachable(x, z):- edge(x, y), reachable(y, z). // inductive rule

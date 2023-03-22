@@ -1,3 +1,8 @@
+# dune
 /_build/
 
+# crash
 *.swp
+
+# datalog
+*.csv
