@@ -8,6 +8,7 @@ and action_kind =
   | DumpAST
   | DumpIL
   | DumpCFG
+  | DumpTypes
 [@@deriving show]
 
 type exit_code = int
