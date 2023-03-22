@@ -1,1 +1,2 @@
-val typecheck : AST.program -> AST.type_
+
+val typecheck : AST.program -> Type.t

@@ -134,7 +134,7 @@ exp:
  | TInt     { Int $1 }
  (* not in original grammar, but otherwise error on 'n-1' *)
  | "-" TInt { let (i, tk) = $2 in Int (- i, tk) }
- (* not in original TIP *)
+ (* ext: not in original TIP *)
  | TBool { Bool $1 }
  | TId { Id $1 }
  | exp "+" exp { BinaryOp ($1, (Plus, $2), $3) }

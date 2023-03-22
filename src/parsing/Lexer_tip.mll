@@ -69,7 +69,7 @@ rule token = parse
   | "alloc" { Talloc (tokinfo lexbuf) }
   | "null" { Tnull (tokinfo lexbuf) }
 
-  (* not in original TIP *)
+  (* ext: not in original TIP *)
   | "true" { TBool (true, tokinfo lexbuf) }
   | "false" { TBool (false, tokinfo lexbuf) }
 

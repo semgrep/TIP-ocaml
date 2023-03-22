@@ -1,8 +1,13 @@
 open AST
 module Set = Set_
 
-exception Todo of string
-exception TypeError
+(*****************************************************************************)
+(* Prelude *)
+(*****************************************************************************)
+
+(*****************************************************************************)
+(* types *)
+(*****************************************************************************)
 
 type type_variable = int
 [@@deriving show]
@@ -22,6 +27,14 @@ type type_constraints = type_constraint list
 type assignments = (string * term) list
 [@@deriving show]
 
+(* error management *)
+exception Todo of string
+exception TypeError
+
+(*****************************************************************************)
+(* Helpers *)
+(*****************************************************************************)
+
 let vars_for_function () =
   let type_variable_counter = ref 0 in
   let create_var () = 
@@ -31,8 +44,9 @@ let vars_for_function () =
   in
   create_var
 
+(*****************************************************************************)
 (* Union find *)
-
+(*****************************************************************************)
 module FuncMap = Map.Make (
       struct
         type t = ident
@@ -83,6 +97,9 @@ let init_reprs constraints =
   in
   Set.fold (fun x acc -> UnionFind.add acc x) type_vars reprs
 
+(*****************************************************************************)
+(* Unify *)
+(*****************************************************************************)
 let rec unify reprs x y =
   let x_repr, reprs = UnionFind.find_and_update reprs x in
   let y_repr, reprs = UnionFind.find_and_update reprs y in
@@ -135,7 +152,9 @@ let solve_constraints constraints =
   let idents = Set.of_list idents |> Set.elements in
   List.map (fun ident -> (ident, UnionFind.find reprs (Ident ident) |> replace_vars reprs)) idents
 
+(*****************************************************************************)
 (* Gather constraints *)
+(*****************************************************************************)
 
 type any =
   | Return of exp * term
@@ -228,17 +247,14 @@ let constraints_of_function _ftypes func : type_constraints =
   let res = param_constraints @ body_constraints @ return_constraints in
   res
 
-(* Solve constraints *)
-
-(* Type check *)
-
+(*****************************************************************************)
+(* Entry point *)
+(*****************************************************************************)
 let typecheck_function ftypes func =
   let constraints = constraints_of_function ftypes func in
   let res = solve_constraints constraints in
   Printf.printf "%s\n" (show_assignments res);
   raise (Todo "Finish typecheck function")
-
-(* Entry point *)
 
 let typecheck program =
    let ftypes = FuncMap.empty in

@@ -9,12 +9,6 @@ open Common
 (* Types *)
 (*****************************************************************************)
 
-type type_ = 
-  | Int
-  | Ptr of type_
-  | Fun of type_ list * type_
-[@@deriving show]
-
 type tok = Parse_info.t
 [@@deriving show]
 
@@ -27,20 +21,21 @@ type ident = string wrap
 type exp =
   (* basic *)
   | Int of int wrap
-  | Bool of bool wrap (* not in original TIP *)
+  (* ext: not in original TIP *)
+  | Bool of bool wrap
   | Id of ident
   | BinaryOp of exp * operator wrap * exp
   | Input of tok (* 'input' *)
   | Call of exp (* usually an Id *) * arg list
   (* pointers *)
-  | Alloc of tok * exp
+  | Alloc of tok (* 'alloc' *) * exp
   | Ref of tok (* '&' *) * ident
   | Deref of tok (* '*' *) * exp
   | Null of tok
   (* record *)
   | Record of field list
   | DotAccess of exp * tok (* '.' *) * ident
-  (* no need for ParenExpr *)
+  (* no need for ParenExpr, it's an AST not CST *)
 
 and arg = exp
 
@@ -54,7 +49,9 @@ and operator =
 [@@deriving show { with_path = false }]
 
 type stm =
-  (* alt: could define an lvalue type and factorize those Assign *)
+  (* alt: could define an lvalue type and factorize those Assign
+   * (in fact IL.ml does that)
+   *)
   | Assign of ident * tok (* = *) * exp
   | AssignDeref of tok (* '*' *) * exp * tok (* = *) * exp
   | AssignField of ident * tok (* '.' *) * ident * tok (* = *) * exp

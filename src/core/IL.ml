@@ -1,7 +1,7 @@
 (*****************************************************************************)
 (* Prelude *)
 (*****************************************************************************)
-(* IL for Intermediate Language.
+(* IL (Intermediate Language).
  *
  * This is the AST in normalized form, which is a more convenient form
  * for further static analysis.
@@ -23,6 +23,7 @@ type ident = AST.ident
 (* similar to a subset of AST.exp *)
 type basic_expr = 
   | Int of int wrap
+  (* ext: *)
   | Bool of bool wrap
   | Null of tok
   | Id of ident
