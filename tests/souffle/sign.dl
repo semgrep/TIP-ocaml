@@ -1,0 +1,64 @@
+// Exercise 5.6 in https://cs.au.dk/~amoeller/spa/spa.pdf
+
+// Input program:
+
+// var a,b,c;
+// a = 42;
+// b = 87;
+// if (input) {
+//   c = a + b;
+// } else {
+//   c = a - b;
+// }						      
+
+// Program types
+
+.type Node <: symbol
+.type Var <: symbol
+
+// Lattice
+
+.type Top <: symbol
+.type Pos <: symbol
+.type Neg <: symbol
+.type Bottom <: symbol
+.type Sign = Top | Pos | Neg | Bottom
+
+// Program encoding
+			       
+// CFG
+
+.decl succ(n1: Node, n2: Node)
+// nodes were called v1, v2, but I prefer n1, n2
+succ("n1", "n2").
+succ("n2", "n3").
+succ("n3", "n4").
+succ("n4", "n5").
+succ("n5", "n6").
+succ("n5", "n7").
+succ("n6", "n8").
+succ("n7", "n8").
+
+.decl pred(n1: Node, n2: Node)
+pred(N1, N2) :-
+     succ(N2, N1).
+
+// Equations
+
+gen("n2", "a", "top").
+gen("n2", "b", "top").
+gen("n2", "c", "top").
+
+.decl join(n: Node, v: Var, s: Sign)
+join(N, V, S) :-
+     pred(N, P1),
+     pred(N, P2),
+
+   
+
+
+.decl out(n: Node, v: Var, s: Sign)
+.output out
+
+out(N, V, S) :-
+  

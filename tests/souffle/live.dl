@@ -1,0 +1,12 @@
+// Section 5.4 in https://cs.au.dk/~amoeller/spa/spa.pdf
+// Exercise ??
+
+// Program types
+
+.type Node <: symbol
+.type Var <: symbol
+
+// Program encoding
+
+// CFG
+// could also be called Edge
