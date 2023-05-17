@@ -15,15 +15,15 @@ open AST
 (* Tokens *)
 (*************************************************************************)
 
-%token <Parse_info.t> EOF
+%token <Tok.t> EOF
 
 (* tokens with "values" *)
-%token <int * Parse_info.t> TInt
-%token <bool * Parse_info.t> TBool
-%token <string * Parse_info.t> TId
+%token <int * Tok.t> TInt
+%token <bool * Tok.t> TBool
+%token <string * Tok.t> TId
 
 (* keywords tokens *)
-%token <Parse_info.t>
+%token <Tok.t>
   Tif Telse Twhile
   Treturn
   Talloc Tnull
@@ -31,12 +31,12 @@ open AST
   Tvar
 
 (* syntax *)
-%token <Parse_info.t>
+%token <Tok.t>
  TOParen "(" TCParen ")" TOBrace "{" TCBrace "}"
  TSemiColon ";" TColon ":" TComma "," TDot "." TEq "="
 
 (* operators *)
-%token <Parse_info.t>
+%token <Tok.t>
  TPlus "+" TMinus "-" TDiv "/"
  TLt "<" TGt ">" TEqEq "=="
  TStar "*" TAmpersand "&"

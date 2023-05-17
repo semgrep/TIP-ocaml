@@ -9,10 +9,7 @@ open Common
 (* Types *)
 (*****************************************************************************)
 
-type tok = Parse_info.t
-[@@deriving show]
-
-type 'a wrap = 'a * tok
+type 'a wrap = 'a * Tok.t
 [@@deriving show]
 
 type ident = string wrap
@@ -25,22 +22,22 @@ type exp =
   | Bool of bool wrap
   | Id of ident
   | BinaryOp of exp * operator wrap * exp
-  | Input of tok (* 'input' *)
+  | Input of Tok.t (* 'input' *)
   | Call of exp (* usually an Id *) * arg list
   (* pointers *)
-  | Alloc of tok (* 'alloc' *) * exp
-  | Ref of tok (* '&' *) * ident
-  | Deref of tok (* '*' *) * exp
-  | Null of tok
+  | Alloc of Tok.t (* 'alloc' *) * exp
+  | Ref of Tok.t (* '&' *) * ident
+  | Deref of Tok.t (* '*' *) * exp
+  | Null of Tok.t
   (* record *)
   | Record of field list
-  | DotAccess of exp * tok (* '.' *) * ident
+  | DotAccess of exp * Tok.t (* '.' *) * ident
   (* no need for ParenExpr, it's an AST not CST *)
 
 and arg = exp
 
 (* constraint: the exp can't be a record itself (but can be a pointer to one)*)
-and field = ident * tok (* ':' *) * exp
+and field = ident * Tok.t (* ':' *) * exp
 
 and operator =
   | Plus | Minus | Mult | Div
@@ -52,15 +49,15 @@ type stm =
   (* alt: could define an lvalue type and factorize those Assign
    * (in fact IL.ml does that)
    *)
-  | Assign of ident * tok (* = *) * exp
-  | AssignDeref of tok (* '*' *) * exp * tok (* = *) * exp
-  | AssignField of ident * tok (* '.' *) * ident * tok (* = *) * exp
-  | GenAssignField of tok (* '*' *) * exp * tok (* '.' *) * ident * tok (* = *) * exp
-  | Output of tok (* 'output' *) * exp
+  | Assign of ident * Tok.t (* = *) * exp
+  | AssignDeref of Tok.t (* '*' *) * exp * Tok.t (* = *) * exp
+  | AssignField of ident * Tok.t (* '.' *) * ident * Tok.t (* = *) * exp
+  | GenAssignField of Tok.t (* '*' *) * exp * Tok.t (* '.' *) * ident * Tok.t (* = *) * exp
+  | Output of Tok.t (* 'output' *) * exp
   (* can be the empty list *)
   | Seq of stm list
-  | If of tok * exp * stm * stm option
-  | While of tok * exp * stm
+  | If of Tok.t * exp * stm * stm option
+  | While of Tok.t * exp * stm
 [@@deriving show { with_path = false }]
 
 type fun_ = {
@@ -68,7 +65,7 @@ type fun_ = {
   fparams: ident list;
   fvars: ident list;
   fbody: stm;
-  freturn:  tok (* 'return' *) * exp;
+  freturn:  Tok.t (* 'return' *) * exp;
 }
 [@@deriving show { with_path = false }]
 

@@ -19,11 +19,11 @@ type node =
   | Join 
   (* TODO? NParam? *)
   | NVar of IL.ident
-  | NAssign of IL.lvalue * IL.tok * IL.expr
-  | NOutput of IL.tok * IL.expr
-  | NCond of IL.tok (* 'if' or 'while' *) * IL.basic_expr
+  | NAssign of IL.lvalue * Tok.t * IL.expr
+  | NOutput of Tok.t * IL.expr
+  | NCond of Tok.t (* 'if' or 'while' *) * IL.basic_expr
   (* alt: could be merged with Exit; must always be before Exit *)
-  | NReturn of IL.tok * IL.expr
+  | NReturn of Tok.t * IL.expr
 [@@deriving show { with_path = false }]
 
 type edge = Direct

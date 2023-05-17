@@ -1,7 +1,7 @@
 val visitor_info_of_tok :
-  (Parse_info.t -> Parse_info.t) -> Parser_tip.token -> Parser_tip.token
+  (Tok.t -> Tok.t) -> Parser_tip.token -> Parser_tip.token
 
-val info_of_tok: Parser_tip.token -> Parse_info.t
+val info_of_tok: Parser_tip.token -> Tok.t
 
 val line_of_tok: Parser_tip.token -> int
 

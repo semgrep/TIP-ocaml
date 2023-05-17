@@ -1,5 +1,4 @@
 open Parser_tip
-module PI = Parse_info
 
 (*****************************************************************************)
 (* Prelude *)
@@ -63,4 +62,4 @@ let info_of_tok tok =
 
 let line_of_tok tok =
   let info = info_of_tok tok in
-  PI.line_of_info info
+  Tok.line_of_tok info

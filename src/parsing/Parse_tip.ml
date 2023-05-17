@@ -1,6 +1,5 @@
 module Flag = Flag_parsing
 module TH = Token_helpers
-module PI = Parse_info
 module PS = Parsing_stat
 
 (*****************************************************************************)
@@ -41,5 +40,5 @@ let parse_program path =
   | Parsing.Parse_error ->
       let cur = tr.Parsing_helpers.current in
       Logs.err (fun m -> m "parse error = %s" (error_msg_tok cur));
-      raise (PI.Parsing_error (TH.info_of_tok cur))
+      raise (Parsing_error.Syntax_error (TH.info_of_tok cur))
 [@@profiling]
