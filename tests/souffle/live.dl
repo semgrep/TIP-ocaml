@@ -1,5 +1,7 @@
-// Section 5.4 in https://cs.au.dk/~amoeller/spa/spa.pdf
-// Exercise ??
+// Section 5.4, Exercise 5.23 in https://cs.au.dk/~amoeller/spa/spa.pdf
+
+// Input program:
+// see section_5_4.tip
 
 // Program types
 
@@ -9,4 +11,63 @@
 // Program encoding
 
 // CFG
-// could also be called Edge
+
+// Successors of a note (could also be called Edge).
+// Nodes were called v1, v2, but I prefer n1, n2.
+.decl succ(n1: Node, n2: Node)
+
+succ("n0", "n1").
+
+succ("n1", "n2").
+
+succ("n2", "n3").
+
+succ("n3", "n4").
+succ("n3", "n11").
+
+succ("n4", "n5").
+
+succ("n5", "n6").
+succ("n5", "n7").
+
+succ("n6", "n7").
+
+succ("n7", "n8").
+
+succ("n8", "n9").
+succ("n8", "n10").
+
+succ("n9", "n10").
+
+succ("n10", "n3").
+
+succ("n11", "n12").
+
+.decl join(n: Node, v: Var)
+join(N, V) :-
+	   succ(N, W),
+           live(W, V).
+
+// [[v]], whether variable 'v' is live *before* the node 'n'
+// A variable is live at a program point if there exists an execution
+// where its value is read later in the execution without it being written to
+// in between
+.decl live(n: Node, v: Var)
+.output live
+
+live("n0", V) :- join("n0", V).
+
+live("n1", V) :- join("n1", V), !x_y_z(V).
+.decl x_y_z(v: Var)
+x_y_z("x").
+x_y_z("y").
+x_y_z("z").
+
+live("n2", V) :- join("n2", V), !x(V).
+.decl x(v: Var)
+x("x").
+
+live("n3", V) :- join("n3", V).
+live("n3", "x").
+
+// TODO: rest
